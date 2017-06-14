@@ -22,20 +22,39 @@ class Credential:
 
 
 class CourseraCredential(Credential):
+    key = 'coursera'
+
     @classmethod
     def set_credentials(cls, username, password):
         credentials = {
             'username': username,
             'password': str(password)
         }
-        cls.add_credentials('coursera', credentials)
+        cls.add_credentials(cls.key, credentials)
 
     @classmethod
     def get_credentials(cls):
-        credentials = cls.get_all_credentials().get('coursera')
+        credentials = cls.get_all_credentials().get(cls.key)
         if not credentials:
             raise GetCredentialsException('Need set coursera credentials: '
-                                          'CourseraCredential.set_credentials(login, password)')
+                                          'CourseraCredential.set_credentials(login, password)'
+                                          'https://www.coursera.org/')
+        return credentials
+
+
+class YandexTranslatorAPICredential(Credential):
+    key = 'yandex_translator_api'
+    @classmethod
+    def set_credentials(cls, api_key):
+        cls.add_credentials(cls.key, api_key)
+
+    @classmethod
+    def get_credentials(cls):
+        credentials = cls.get_all_credentials().get(cls.key)
+        if not credentials:
+            raise GetCredentialsException('Need set yandex translator api credentials: '
+                                          'YandexTranslatorAPICredential.set_credentials(api_key)'
+                                          'https://translate.yandex.ru/developers/keys')
         return credentials
 
 
@@ -46,3 +65,4 @@ class GetCredentialsException(Exception):
 if __name__ == '__main__':
     Credential.add_credentials('Vasya', {'Yot': 'Mot'})
     CourseraCredential.set_credentials('Example', 12331)
+    YandexTranslatorAPICredential.set_credentials('my_api_key')

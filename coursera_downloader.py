@@ -106,5 +106,5 @@ if __name__ == '__main__':
     user_coursera = Coursera(**CourseraCredential.get_credentials())
     # user_coursera = Coursera('login', 'password')
 
-    user_coursera.get_list_courses()
-    # user_coursera.download_course('supervised-learning')
+    # user_coursera.get_list_courses()
+    user_coursera.download_course('machine-learning')
