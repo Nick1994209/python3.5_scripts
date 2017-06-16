@@ -6,6 +6,7 @@ STATUS_SUCCESS = 200
 
 class YandexTranslator:
     api = 'https://translate.yandex.net/api/v1.5/tr.json/'
+    MAX_COUNT_TEXTS = 100  # max count texts in list can be translate free
 
     def __init__(self, api_key):
         """
@@ -30,7 +31,7 @@ class YandexTranslator:
             raise Exception(response.json())  # TODO
         return response.json()['lang']
 
-    def translate_text(self, text, language='ru'):
+    def translate_text(self, text, language):
         """
         https://tech.yandex.ru/translate/doc/dg/reference/translate-docpage/
         :param text: need translate text
@@ -38,6 +39,7 @@ class YandexTranslator:
                          "fr-ru" if need translate french language to russian 
         :return: translated text
         """
+        return text
         args = {
             'text': text,
             'key': self.api_key,
@@ -48,7 +50,7 @@ class YandexTranslator:
             raise Exception(response.json())  # TODO
         return response.json()['text']
 
-    def translate_with_detect_language(self, text, language_to='ru'):
+    def translate_with_detect_language(self, text, language_to):
         language_from = self.get_language(text)
         return self.translate_text(text, language_from + '-' + language_to)
 

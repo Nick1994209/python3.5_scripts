@@ -5,3 +5,5 @@ coursera/*
 .DS_Store
 *.pyc
 __pycache__
+
+download.py

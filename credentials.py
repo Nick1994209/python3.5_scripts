@@ -1,8 +1,12 @@
 import json
+import os
+
+file_path = os.path.abspath(__file__)
+dir_path = os.path.dirname(file_path)
 
 
 class Credential:
-    credentials_file = 'credentials.json'
+    credentials_file = os.path.join(dir_path, 'credentials.json')
 
     @classmethod
     def get_all_credentials(cls):
@@ -44,6 +48,7 @@ class CourseraCredential(Credential):
 
 class YandexTranslatorAPICredential(Credential):
     key = 'yandex_translator_api'
+
     @classmethod
     def set_credentials(cls, api_key):
         cls.add_credentials(cls.key, api_key)
@@ -62,7 +67,7 @@ class GetCredentialsException(Exception):
     pass
 
 
-if __name__ == '__main__':
-    Credential.add_credentials('Vasya', {'Yot': 'Mot'})
-    CourseraCredential.set_credentials('Example', 12331)
-    YandexTranslatorAPICredential.set_credentials('my_api_key')
+# if __name__ == '__main__':
+#     Credential.add_credentials('Vasya', {'Yot': 'Mot'})
+#     CourseraCredential.set_credentials('Example', 12331)
+#     YandexTranslatorAPICredential.set_credentials('my_api_key')

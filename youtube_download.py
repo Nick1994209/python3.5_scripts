@@ -9,9 +9,9 @@ class YouTube:
         Need install youtube-dl on you platform
     """
     pref_settings = ' -f "bestvideo[height=720]+best[ext=mp4]" '
-    sub_extension = '.vtt'
-    ru_sub = property(lambda self: 'ru' + self.sub_extension)
-    en_sub = property(lambda self: 'en' + self.sub_extension)
+    sub_extension = 'srt'
+    ru_sub = property(lambda self: 'ru.' + self.sub_extension)
+    en_sub = property(lambda self: 'en.' + self.sub_extension)
     directory = 'youtube'
 
     def __init__(self, video_url, directory=None):
@@ -19,18 +19,19 @@ class YouTube:
         self.directory = directory or self.directory
 
     def download(self):
-        file_path = os.path.join(self.directory, '%(playlist_index)s-%(title)s.%(ext)s')
+        file_path = os.path.join(self.directory, ' %(playlist_index)s-%(title)s.%(ext)s')
+        subs = (' --all-subs --write-auto-sub '
+                '--convert-subs="{sub_format}"'.format(sub_format=self.sub_extension))
         command = ('youtube-dl '
                    '"{video_url}" '
-                   '-o "{file_path}" '
-                   '--all-subs --write-auto-sub') + self.pref_settings
+                   '-o "{file_path}" ') + subs + self.pref_settings
         self.run_command(command.format(video_url=self.video_url, file_path=file_path))
-        self.delete_bad_subtitles()
+        self.delete_unnecessary_subtitles()
 
     def run_command(self, command):
         subprocess.check_call(command, shell=True, env=self.get_environ())
 
-    def delete_bad_subtitles(self):
+    def delete_unnecessary_subtitles(self):
         all_files = os.listdir(self.directory)
         for f in all_files:
             if f.endswith(self.sub_extension) and (

@@ -7,6 +7,14 @@ import subprocess
 
 class Coursera:
     coursera_auth = 'coursera-dl -u {username} -p {password} '
+    sub_extension = 'srt'
+    text_extension = 'txt'
+    ru_sub = property(lambda self: 'ru.' + self.sub_extension)
+    en_sub = property(lambda self: 'en.' + self.sub_extension)
+    ru_txt = property(lambda self: 'ru.' + self.text_extension)
+    en_txt = property(lambda self: 'en.' + self.text_extension)
+    download_path = 'coursera'
+
     """
 optional arguments:
   -h, --help            show this help message and exit
@@ -91,8 +99,14 @@ Selection of material to download:
         self.run_command(self.coursera + '--list-courses')
 
     def download_course(self, name, download_path='coursera'):
+        """
+        :param name: course name from self.get_list_courses
+        :param download_path: directory for download courses
+        :return: 
+        """
         command = self.coursera + ' --jobs=3 --path="{}" --resume '.format(download_path) + name
         self.run_command(command)
+        self.delete_unnecessary_files(os.path.join(download_path, name))
 
     @staticmethod
     def run_command(command):
@@ -100,10 +114,24 @@ Selection of material to download:
         current_environ['PATH'] = current_environ.get('PATH', '') + ':/usr/local/bin'
         subprocess.check_call(command, shell=True, env=current_environ)
 
+    def delete_unnecessary_files(self, download_path):
+        for f in os.listdir(download_path):
+            path = os.path.join(download_path, f)
+            if os.path.isdir(path):
+                self.delete_unnecessary_files(path)
+
+            if f.endswith(self.sub_extension):
+                if not f.endswith(self.en_sub) and not f.endswith(self.ru_sub):
+                    os.remove(path)
+            elif f.endswith(self.text_extension):
+                if not f.endswith(self.ru_txt) and not f.endswith(self.ru_txt):
+                    os.remove(path)
+
 
 if __name__ == '__main__':
     from credentials import CourseraCredential
     user_coursera = Coursera(**CourseraCredential.get_credentials())
+
     # user_coursera = Coursera('login', 'password')
 
     # user_coursera.get_list_courses()
