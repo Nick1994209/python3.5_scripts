@@ -7,3 +7,4 @@ coursera/*
 __pycache__
 
 download.py
+cx_freeze_examples/build

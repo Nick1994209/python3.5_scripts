@@ -22,11 +22,28 @@ class YouTube:
         file_path = os.path.join(self.directory, ' %(playlist_index)s-%(title)s.%(ext)s')
         subs = (' --all-subs --write-auto-sub '
                 '--convert-subs="{sub_format}"'.format(sub_format=self.sub_extension))
-        command = ('youtube-dl '
-                   '"{video_url}" '
-                   '-o "{file_path}" ') + subs + self.pref_settings
-        self.run_command(command.format(video_url=self.video_url, file_path=file_path))
+        youtube_dl_params = ('"{video_url}" '
+                             '-o "{file_path}" ') + subs + self.pref_settings
+        filled_params = youtube_dl_params.format(video_url=self.video_url, file_path=file_path)
+
+        self.run_command('youtube-dl ' + filled_params)
         self.delete_unnecessary_subtitles()
+
+    def download_py(self):
+        import youtube_dl
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'logger': MyLogger(),
+            'progress_hooks': [],
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([self.video_url])
+
 
     def run_command(self, command):
         subprocess.check_call(command, shell=True, env=self.get_environ())
@@ -44,6 +61,17 @@ class YouTube:
         current_environ = os.environ
         current_environ['PATH'] = current_environ.get('PATH', '') + ':/usr/local/bin'
         return current_environ
+
+
+class MyLogger(object):
+    def debug(self, msg):
+        print(msg)
+
+    def warning(self, msg):
+        print(msg)
+
+    def error(self, msg):
+        print(msg)
 
 
 if __name__ == '__main__':
