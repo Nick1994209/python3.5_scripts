@@ -7,12 +7,9 @@ import subprocess
 
 class Coursera:
     coursera_auth = 'coursera-dl -u {username} -p {password} '
-    sub_extension = 'srt'
-    text_extension = 'txt'
-    ru_sub = property(lambda self: 'ru.' + self.sub_extension)
-    en_sub = property(lambda self: 'en.' + self.sub_extension)
-    ru_txt = property(lambda self: 'ru.' + self.text_extension)
-    en_txt = property(lambda self: 'en.' + self.text_extension)
+    sub_extensions = ['srt', 'vtt']
+    text_extensions = ['txt']
+    languages = ['en', 'ru']
     download_path = 'coursera'
 
     """
@@ -115,23 +112,17 @@ Selection of material to download:
         subprocess.check_call(command, shell=True, env=current_environ)
 
     def delete_unnecessary_files(self, download_path):
-        for f in os.listdir(download_path):
-            path = os.path.join(download_path, f)
-            if os.path.isdir(path):
-                self.delete_unnecessary_files(path)
+        from deleter_unnecesary_files import DeleteUnnecessaryFiles
 
-            if f.endswith(self.sub_extension):
-                if not f.endswith(self.en_sub) and not f.endswith(self.ru_sub):
-                    os.remove(path)
-            elif f.endswith(self.text_extension):
-                if not f.endswith(self.ru_txt) and not f.endswith(self.ru_txt):
-                    os.remove(path)
+        extensions = self.sub_extensions + self.text_extensions
+        need_leave_files_with_ends = DeleteUnnecessaryFiles.get_need_leave_files_with_ends(
+            self.languages, extensions)
+        DeleteUnnecessaryFiles(download_path, extensions, need_leave_files_with_ends)
 
 
 if __name__ == '__main__':
     from credentials import CourseraCredential
     user_coursera = Coursera(**CourseraCredential.get_credentials())
-
     # user_coursera = Coursera('login', 'password')
 
     # user_coursera.get_list_courses()

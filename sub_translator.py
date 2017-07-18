@@ -1,8 +1,8 @@
 import os
+import re
 
 from credentials import YandexTranslatorAPICredential
 from translator import YandexTranslator
-import re
 
 
 class SubtitlesTranslator:

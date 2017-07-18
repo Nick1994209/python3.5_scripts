@@ -1,5 +1,5 @@
-from furl import furl
 import requests
+from furl import furl
 
 STATUS_SUCCESS = 200
 

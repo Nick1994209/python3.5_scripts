@@ -8,3 +8,4 @@ __pycache__
 
 download.py
 cx_freeze_examples/build
+*.mp3

@@ -10,8 +10,8 @@ class YouTube:
     """
     pref_settings = ' -f "bestvideo[height=720]+best[ext=mp4]" '
     sub_extension = 'srt'
-    ru_sub = property(lambda self: 'ru.' + self.sub_extension)
-    en_sub = property(lambda self: 'en.' + self.sub_extension)
+    sub_extensions = ['srt', 'vtt']
+    languages = ['en', 'ru']
     directory = 'youtube'
 
     def __init__(self, video_url, directory=None):
@@ -44,17 +44,15 @@ class YouTube:
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([self.video_url])
 
-
     def run_command(self, command):
         subprocess.check_call(command, shell=True, env=self.get_environ())
 
     def delete_unnecessary_subtitles(self):
-        all_files = os.listdir(self.directory)
-        for f in all_files:
-            if f.endswith(self.sub_extension) and (
-                        not f.endswith(self.en_sub) and not f.endswith(self.ru_sub)):
-                sub_path = os.path.join(self.directory, f)
-                os.remove(sub_path)
+        from deleter_unnecesary_files import DeleteUnnecessaryFiles
+
+        need_leave_files_with_ends = DeleteUnnecessaryFiles.get_need_leave_files_with_ends(
+            self.languages, self.sub_extensions)
+        DeleteUnnecessaryFiles(self.directory, self.sub_extensions, need_leave_files_with_ends)
 
     @staticmethod
     def get_environ():

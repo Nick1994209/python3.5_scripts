@@ -1,6 +1,5 @@
 import udacity
 
-
 user = udacity.User('nick1994209@.ru', '')
 name = user.name()
 

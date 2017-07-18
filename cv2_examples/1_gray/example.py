@@ -1,4 +1,5 @@
 import cv2
+
 from matplotlib import pyplot as plt
 
 img_path = 'bird_with_python.jpg'

@@ -1,6 +1,5 @@
-from PIL import Image
 import pytesseract
-
+from PIL import Image
 
 file_name = 'text_example.jpg'
 
