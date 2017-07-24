@@ -112,7 +112,7 @@ Selection of material to download:
         subprocess.check_call(command, shell=True, env=current_environ)
 
     def delete_unnecessary_files(self, download_path):
-        from deleter_unnecesary_files import DeleteUnnecessaryFiles
+        from work_with_files import DeleteUnnecessaryFiles
 
         extensions = self.sub_extensions + self.text_extensions
         need_leave_files_with_ends = DeleteUnnecessaryFiles.get_need_leave_files_with_ends(

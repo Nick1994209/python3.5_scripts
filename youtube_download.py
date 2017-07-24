@@ -48,7 +48,7 @@ class YouTube:
         subprocess.check_call(command, shell=True, env=self.get_environ())
 
     def delete_unnecessary_subtitles(self):
-        from deleter_unnecesary_files import DeleteUnnecessaryFiles
+        from work_with_files import DeleteUnnecessaryFiles
 
         need_leave_files_with_ends = DeleteUnnecessaryFiles.get_need_leave_files_with_ends(
             self.languages, self.sub_extensions)
