@@ -1,5 +1,9 @@
+from furl import furl
 import os
 import subprocess
+
+from edit_subtitles_times import DirectoryWithSubtitlesEditImpositionTime
+from sub_translator import directory_subs_translate
 
 
 class YouTube:
@@ -8,26 +12,54 @@ class YouTube:
         
         Need install youtube-dl on you platform
     """
-    pref_settings = ' -f "bestvideo[height=720]+best[ext=mp4]" '
+    pref_settings = ' -f "bestvideo[height={video_height}]+best[ext=mp4]" '
     sub_extension = 'srt'
     sub_extensions = ['srt', 'vtt']
     languages = ['en', 'ru']
     directory = 'youtube'
 
-    def __init__(self, video_url, directory=None):
+    def __init__(self, video_url, directory=None, with_subtitles=True, download_list_files=False,
+                 need_translate=False, video_height=720):
         self.video_url = video_url
         self.directory = directory or self.directory
+        self.with_subtitles = with_subtitles
+        self.need_translate = need_translate
+        self.video_height = video_height
 
-    def download(self):
+        if not download_list_files:
+            f = furl(video_url)
+            f.args.pop('list', None)
+            self.video_url = f.url
+
+    def download(self, still_try_download=False):
         file_path = os.path.join(self.directory, ' %(playlist_index)s-%(title)s.%(ext)s')
-        subs = (' --all-subs --write-auto-sub '
-                '--convert-subs="{sub_format}"'.format(sub_format=self.sub_extension))
-        youtube_dl_params = ('"{video_url}" '
-                             '-o "{file_path}" ') + subs + self.pref_settings
+        youtube_dl_params = '"{video_url}" -o "{file_path}" --ignore-errors '
+        if self.with_subtitles:
+            subs = (' --all-subs --write-auto-sub '
+                    '--convert-subs="{sub_format}"'.format(sub_format=self.sub_extension))
+            youtube_dl_params += subs
+
         filled_params = youtube_dl_params.format(video_url=self.video_url, file_path=file_path)
 
-        self.run_command('youtube-dl ' + filled_params)
+        try:
+            self.run_command('youtube-dl ' + filled_params + self.pref_settings.format(
+                video_height=self.video_height))
+        except subprocess.CalledProcessError:
+            self.run_command('youtube-dl ' + filled_params)
+            # try:
+            #     self.run_command('youtube-dl ' + filled_params)
+            # except subprocess.CalledProcessError:
+            #     if still_try_download:
+            #         filled_params = youtube_dl_params.format(video_url=self.video_url,
+            #                                                  file_path=self.directory + '_try3')
+            #         self.run_command('youtube-dl ' + filled_params)
+            #     else:
+            #         raise
+
         self.delete_unnecessary_subtitles()
+        DirectoryWithSubtitlesEditImpositionTime.find_subtitles_and_edit(self.directory)
+        if self.need_translate:
+            directory_subs_translate(self.directory, 'en', 'ru')
 
     def download_py(self):
         import youtube_dl
@@ -52,7 +84,7 @@ class YouTube:
 
         need_leave_files_with_ends = DeleteUnnecessaryFiles.get_need_leave_files_with_ends(
             self.languages, self.sub_extensions)
-        DeleteUnnecessaryFiles(self.directory, self.sub_extensions, need_leave_files_with_ends)
+        DeleteUnnecessaryFiles(self.directory, self.sub_extensions, need_leave_files_with_ends).main()
 
     @staticmethod
     def get_environ():

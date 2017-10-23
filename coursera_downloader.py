@@ -5,6 +5,7 @@ import os
 import subprocess
 
 
+
 class Coursera:
     coursera_auth = 'coursera-dl -u {username} -p {password} '
     sub_extensions = ['srt', 'vtt']
@@ -95,7 +96,7 @@ Selection of material to download:
     def get_list_courses(self):
         self.run_command(self.coursera + '--list-courses')
 
-    def download_course(self, name, download_path='coursera'):
+    def download_course(self, name, download_path='coursera', translate_subs=False):
         """
         :param name: course name from self.get_list_courses
         :param download_path: directory for download courses
@@ -104,6 +105,11 @@ Selection of material to download:
         command = self.coursera + ' --jobs=3 --path="{}" --resume '.format(download_path) + name
         self.run_command(command)
         self.delete_unnecessary_files(os.path.join(download_path, name))
+        if translate_subs:
+            from sub_translator import directory_subs_translate
+            os.path.join(download_path, name)
+            directory_subs_translate(os.path.join(download_path, name), 'en', 'ru')
+
 
     @staticmethod
     def run_command(command):
@@ -126,4 +132,4 @@ if __name__ == '__main__':
     # user_coursera = Coursera('login', 'password')
 
     # user_coursera.get_list_courses()
-    user_coursera.download_course('machine-learning')
+    # user_coursera.download_course('machine-learning')

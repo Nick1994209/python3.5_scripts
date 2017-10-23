@@ -1,7 +1,7 @@
 import mutagen
 import re
 import shutil
-
+import subprocess
 import os
 from mutagen.easyid3 import EasyID3
 from tqdm import tqdm
@@ -27,7 +27,7 @@ class DeleteUnnecessaryFiles:
             if self.is_need_leave_file(path):
                 continue
             print(path)
-            # os.remove(path)
+            os.remove(path)
 
     def is_file_with_delete_extension(self, file_path):
         for extension in self.need_delete_files_with_extensions:
@@ -97,6 +97,10 @@ class CopyFilesHelper:
 
 
 class AudioSetSortlist:
+    """
+    Часто бывает, что ауидотреки в плейлисте на телефоне не в том порядке, что и на компе-
+        решаем эту проблему =)
+    """
     def __init__(self, directory_from, files_with_extensions=('mp3', )):
         self.directory = directory_from
         self.files_with_extensions = files_with_extensions
@@ -145,16 +149,69 @@ class AudioSetSortlist:
         EasyID3(file_path)
         print(file_path)
 
+
+class ConvertVideo:
+    def __init__(self, directory, from_extension, to_extension):
+        self.directory = directory
+        self.from_extension = from_extension.lower()
+        self.to_extension = to_extension.lower()
+
+    def run(self):
+        self._main()
+
+    def _main(self, from_directory_path=None):
+        is_main_directory = from_directory_path
+        from_directory_path = from_directory_path or self.directory
+
+        main_files_or_directories = os.listdir(from_directory_path)
+        if is_main_directory is None:
+            main_files_or_directories = tqdm(main_files_or_directories)
+
+        for name in main_files_or_directories:
+            path = os.path.join(from_directory_path, name)
+            if os.path.isdir(path):
+                self._main(path)
+                continue
+
+            if self.is_file_with_extension(path):
+                self.convert_video(path)
+
+    def is_file_with_extension(self, file_path):
+        if file_path.lower().endswith(self.from_extension):
+            return True
+        return False
+
+    def convert_video(self, file_path):
+        _, name = os.path.split(file_path)
+        """
+        fmpeg -i лучшие/\ 06-Можно\ ли\ верить\ гороскопам—\ Научпок.webm a.mp4
+        """
+        # file_path = file_path.replace(' ', r'\ ')
+
+        # to_path = '{}.{}'.format(name, self.to_extension)
+        import re
+        # file_path = re.sub(' ', '\ ', file_path)
+        to_path = file_path + '.' + self.to_extension
+
+        # command = 'ffmpeg -i {file_path} {to_path}'.format(file_path=file_path, to_path=to_path)
+        # command = 'ffmpeg -i ' + file_path + ' ' + to_path
+        # print(repr(command))
+        subprocess.check_call(['ffmpeg', '-i', file_path, to_path])
+        # subprocess.check_call(repr(command))
+        os.remove(file_path)
+
+
 if __name__ == '__main__':
     pass
     # extensions = ['vtt', 'srt']
     # languages = ['ru', 'en']
     # need_leave_files_with_ends = DeleteUnnecessaryFiles.get_need_leave_files_with_ends(
     #     languages, extensions)
-    # DeleteUnnecessaryFiles('youtube', extensions, need_leave_files_with_ends).delete()
+    # DeleteUnnecessaryFiles('coursera', ['srt', 'txt'], ['en.srt', 'ru.srt', 'ru.txt', 'en.txt'], ).main()
+    # DeleteUnnecessaryFiles('coursera_show', ['html', ], ).main()
     #
-    # CopyFilesHelper('coursera/machine-learning', 'machine-learning', '*', '\d+_').copy()
-    # CopyFilesHelper('/Users/n.korolkov/Documents/Break My Fucking Sky - Discography (2011-2014)',
-    #                 '/Users/n.korolkov/Documents/Break My Fucking Sky (2011-2014)',
-    #                 ['mp3'], '\d+ -').copy()
-    # AudioSetSortlist('/Users/n.korolkov/Documents/history').main()
+    # CopyFilesHelper('coursera/mfti/supervised-learning', 'coursera_show/mfti-2supervised-learning', ['mp4', 'srt'], '\d+_').main()
+    # CopyFilesHelper('coursera/algorithmic-thinking-1', 'coursera_show/algorithmic-thinking', ['mp4', 'srt'], '\d+_').main()
+    # CopyFilesHelper('coursera/machine-learning', 'coursera_show/machine-learning', ['mp4', 'srt'], '\d+_').main()
+    AudioSetSortlist('/Users/n.korolkov/Documents/audiobook').main()
+    # ConvertVideo('youtube/научлок', from_extension='webm', to_extension='mp4').run()

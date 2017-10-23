@@ -5,6 +5,52 @@ from credentials import YandexTranslatorAPICredential
 from translator import YandexTranslator
 
 
+class DirectoryWithSubtitlesTranslate:
+    subtitles_ext = '.srt'
+
+    def __init__(self, sub_translator):
+        """
+        :param sub_translator: SubtitlesTranslator.translate
+        """
+        self.sub_translator = sub_translator
+
+    def translate_subtitles(self, directory, translate_from, translate_to, recursive=True):
+        list_files_with_directories = os.listdir(directory)
+
+        for path in list_files_with_directories:
+            path = os.path.join(directory, path)
+            if os.path.isdir(path) and recursive:
+                self.translate_subtitles(path, translate_from, translate_to)
+            elif self.check_file_to_translate(path, translate_from, translate_to):
+                self.translate_one_file(path, translate_to)
+
+    def check_file_to_translate(self, subtitle_path, translate_from, translate_to):
+        if not subtitle_path.lower().endswith(self.generate_end_file(translate_from)):
+            return False
+
+        list_files_with_directories = os.listdir(os.path.dirname(subtitle_path))
+        file_name = os.path.basename(subtitle_path)
+        base_file = file_name.lower().rsplit(self.generate_end_file(translate_from), 1)[0]
+        # print(base_file)
+        for path in list_files_with_directories:
+            path = path.lower()
+            if not path.endswith(self.generate_end_file(translate_to)):
+                continue
+            if path.startswith(base_file):
+                return False
+        return True
+
+    def translate_one_file(self, path, translate_to):
+        print(path)
+        try:
+            self.sub_translator(path, translate_to_language=translate_to)
+        except Exception as e:
+            print('ERROR', e, '\n\n')
+
+    def generate_end_file(self, language):
+        return language + self.subtitles_ext
+
+
 class SubtitlesTranslator:
     search_translate_phrase = r'[a-zA-Z]+'
 
@@ -65,49 +111,6 @@ class SubtitlesTranslator:
             file_.writelines(translated_lines)
 
 
-class DirectoryWithSubtitlesTranslate:
-    subtitles_ext = '.srt'
-
-    def __init__(self, sub_translator: SubtitlesTranslator.translate):
-        self.sub_translator = sub_translator
-
-    def translate_subtitles(self, directory, translate_from, translate_to, recursive=True):
-        list_files_with_directories = os.listdir(directory)
-
-        for path in list_files_with_directories:
-            path = os.path.join(directory, path)
-            if os.path.isdir(path) and recursive:
-                self.translate_subtitles(path, translate_from, translate_to)
-            elif self.check_file_to_translate(path, translate_from, translate_to):
-                self.translate_one_file(path, translate_to)
-
-    def check_file_to_translate(self, subtitle_path, translate_from, translate_to):
-        if not subtitle_path.lower().endswith(self.generate_end_file(translate_from)):
-            return False
-
-        list_files_with_directories = os.listdir(os.path.dirname(subtitle_path))
-        file_name = os.path.basename(subtitle_path)
-        base_file = file_name.lower().rsplit(self.generate_end_file(translate_from), 1)[0]
-        # print(base_file)
-        for path in list_files_with_directories:
-            path = path.lower()
-            if not path.endswith(self.generate_end_file(translate_to)):
-                continue
-            if path.startswith(base_file):
-                return False
-        return True
-
-    def translate_one_file(self, path, translate_to):
-        print(path)
-        try:
-            self.sub_translator(path, translate_to_language=translate_to)
-        except Exception as e:
-            print('ERROR', e, '\n\n')
-
-    def generate_end_file(self, language):
-        return language + self.subtitles_ext
-
-
 translator = YandexTranslator(YandexTranslatorAPICredential.get_credentials())
 sub_translate = SubtitlesTranslator(translator).translate
 directory_subs_translate = DirectoryWithSubtitlesTranslate(sub_translate).translate_subtitles
@@ -115,5 +118,5 @@ directory_subs_translate = DirectoryWithSubtitlesTranslate(sub_translate).transl
 
 if __name__ == '__main__':
     # sub_translate('01_non-linear-hypotheses.en.srt', 'ru')
-    directory = 'coursera'
+    directory = 'youtube/to_google  '
     directory_subs_translate(directory, 'en', 'ru')
