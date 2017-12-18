@@ -16,6 +16,8 @@ class DeleteUnnecessaryFiles:
 
     def main(self, from_directory_path=None):
         from_directory_path = from_directory_path or self.directory
+        if not os.path.exists(from_directory_path):
+            os.makedirs(from_directory_path)
 
         for name in os.listdir(from_directory_path):
             path = os.path.join(from_directory_path, name)

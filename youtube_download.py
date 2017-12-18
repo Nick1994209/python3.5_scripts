@@ -31,9 +31,11 @@ class YouTube:
             f.args.pop('list', None)
             self.video_url = f.url
 
-    def download(self, still_try_download=False):
+    def download(self, no_check_ssl=False, still_try_download=False):
         file_path = os.path.join(self.directory, ' %(playlist_index)s-%(title)s.%(ext)s')
-        youtube_dl_params = '"{video_url}" -o "{file_path}" --ignore-errors '
+        youtube_dl_params = ' "{video_url}" -o "{file_path}" --ignore-errors '
+        if no_check_ssl:
+            youtube_dl_params = ' --no-check-certificate ' + youtube_dl_params
         if self.with_subtitles:
             subs = (' --all-subs --write-auto-sub '
                     '--convert-subs="{sub_format}"'.format(sub_format=self.sub_extension))

@@ -43,3 +43,5 @@ urllib3==1.21.1
 Wand==0.4.4
 wxPython==4.0.0a3
 youtube-dl==2017.7.2
+mutagen
+tqdm
