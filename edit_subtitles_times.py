@@ -79,5 +79,6 @@ class EditImpositionTimeInSubtitles:
         minutes, seconds = divmod(remainder, 60)
         return hours, minutes, seconds, time_delta.microseconds
 
+
 if __name__ == '__main__':
     DirectoryWithSubtitlesEditImpositionTime.find_subtitles_and_edit('youtube')

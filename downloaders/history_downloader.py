@@ -5,6 +5,7 @@ import bs4
 import requests
 from furl import furl
 from tqdm import tqdm
+from .file import download_file
 
 
 def download_from_histrf():
@@ -31,16 +32,6 @@ def download_from_histrf():
             f = furl(page)
             f.path = mp3
             download_file(f.url, file_name, 'mp3/histrf')
-
-
-def download_file(remote_file_path, file_name=None, download_to='files'):
-    if not os.path.exists(download_to):
-        os.makedirs(download_to)
-
-    response = requests.get(remote_file_path)
-    with open(os.path.join(download_to, file_name), 'wb') as to_file:
-        for chunk in response.iter_content(chunk_size=1024):
-            to_file.write(chunk)
 
 
 if __name__ == '__main__':

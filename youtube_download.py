@@ -1,39 +1,115 @@
-from furl import furl
 import os
-import subprocess
-
+import youtube_dl
 from edit_subtitles_times import DirectoryWithSubtitlesEditImpositionTime
 from sub_translator import directory_subs_translate
 
+'''
+YouTube example use
+youtube_with_subs = YouTube(with_subtitles=True, need_translate=True, video_height=720,
+                            username='nick1994209@gmail.com', password='NICK785665')
+youtube_without_subs = YouTube(with_subtitles=False, need_translate=False, video_height=720,
+                               username='nick1994209@gmail.com', password='NICK785665')
 
-class YouTube:
+youtube_without_subs.download(
+    'https://www.youtube.com/watch?v=uaBp0uiLvKQ&list=PLj8oar3hwqiXIQr-m25rocuCdsjOAx_xp',
+    download_playlist=True,
+    directory='youtube/neural_networks_microsoft',
+    ignore_errors=False
+)
+'''
+
+
+class YouTubeDownloader:
     """
         YouTube video downloader
-        
-        Need install youtube-dl on you platform
     """
-    pref_settings = ' -f "bestvideo[height={video_height}]+best[ext=mp4]" '
+    pref_settings = ' -f "bestvideo[height={video_height}]" '  # +best[ext=mp4]" '
     sub_extension = 'srt'
     sub_extensions = ['srt', 'vtt']
     languages = ['en', 'ru']
-    directory = 'youtube'
 
-    def __init__(self, video_url, directory=None, with_subtitles=True, download_list_files=False,
-                 need_translate=False, video_height=720):
-        self.video_url = video_url
-        self.directory = directory or self.directory
+    def __init__(self, with_subtitles=True, need_translate=False,
+                 video_height=720, username=None, password=None):
         self.with_subtitles = with_subtitles
         self.need_translate = need_translate
         self.video_height = video_height
+        self.username = username
+        self.password = password
 
-        if not download_list_files:
-            f = furl(video_url)
-            f.args.pop('list', None)
-            self.video_url = f.url
+    def download(self, url, download_playlist=False, directory='youtube',
+                 no_check_ssl=True, ignore_errors=False):
 
-    def download(self, no_check_ssl=False, still_try_download=False):
-        file_path = os.path.join(self.directory, ' %(playlist_index)s-%(title)s.%(ext)s')
-        youtube_dl_params = ' "{video_url}" -o "{file_path}" --ignore-errors '
+        postprocessors = [
+            {
+                'key': 'FFmpegSubtitlesConvertor',
+                'format': self.sub_extension,  # (currently supported: srt|ass|vtt)')
+            }
+        ]
+        ydl_opts = {
+            'nocheckcertificate': no_check_ssl,
+            'outtmpl': os.path.join(directory, '%(playlist_index)s-%(title)s.%(ext)s'),
+            'ignoreerrors': ignore_errors,
+            'allsubtitles': self.with_subtitles,
+            'writeautomaticsub': self.with_subtitles,
+            'postprocessors': postprocessors,
+            # 'format': 'bestvideo[height=720]',
+            'format': 'bestvideo+bestaudio/best',
+            'progress_with_newline': False,  # TODO передать в Downloader
+            'noplaylist': download_playlist,
+            # 'external_downloader': 'a2',
+
+            'username': self.username,
+            'password': self.password,
+            'logger': MyLogger(),
+        }
+
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            # def to_screen(message, skip_eol=False):
+            #     """Print message to stdout if not in quiet mode."""
+            #     print(message, end="\r")
+            #     # return ydl.to_stdout(message, skip_eol=-1, check_quiet=True)
+            # ydl.to_screen = to_screen
+
+            ydl.download([url])
+
+        self.post_download_process(directory)
+
+    def post_download_process(self, directory):
+        self.delete_unnecessary_subtitles(directory)
+        DirectoryWithSubtitlesEditImpositionTime.find_subtitles_and_edit(directory)
+        if self.need_translate:
+            directory_subs_translate(directory, 'en', 'ru')
+
+    def delete_unnecessary_subtitles(self, directory):
+        from work_with_files import DeleteUnnecessaryFiles
+
+        need_leave_files_with_ends = DeleteUnnecessaryFiles.get_need_leave_files_with_ends(
+            self.languages, self.sub_extensions)
+        DeleteUnnecessaryFiles(directory, self.sub_extensions, need_leave_files_with_ends).main()
+
+
+class MyLogger(object):
+    def debug(self, msg):
+        print('DEBUG-----', msg)
+
+    def warning(self, msg):
+        print('WARNING----', msg)
+
+    def error(self, msg):
+        print('ERROR-----', msg)
+
+
+'''
+
+    def download_command_line(self, url, directory='youtube', no_check_ssl=False,
+                              still_try_download=False):
+        """
+            Need install youtube-dl on you platform
+        """
+
+        file_path = os.path.join(directory, ' %(playlist_index)s-%(title)s.%(ext)s')
+        youtube_dl_start_params = ' "{video_url}" -o "{file_path}" --ignore-errors '
+        youtube_dl_params = youtube_dl_start_params
         if no_check_ssl:
             youtube_dl_params = ' --no-check-certificate ' + youtube_dl_params
         if self.with_subtitles:
@@ -41,52 +117,30 @@ class YouTube:
                     '--convert-subs="{sub_format}"'.format(sub_format=self.sub_extension))
             youtube_dl_params += subs
 
-        filled_params = youtube_dl_params.format(video_url=self.video_url, file_path=file_path)
+        filled_params = youtube_dl_params.format(video_url=url, file_path=file_path)
 
         try:
+            print(
+                'youtube-dl ' + filled_params + self.pref_settings.format(
+                    video_height=self.video_height)
+            )
             self.run_command('youtube-dl ' + filled_params + self.pref_settings.format(
                 video_height=self.video_height))
         except subprocess.CalledProcessError:
             self.run_command('youtube-dl ' + filled_params)
-            # try:
-            #     self.run_command('youtube-dl ' + filled_params)
-            # except subprocess.CalledProcessError:
-            #     if still_try_download:
-            #         filled_params = youtube_dl_params.format(video_url=self.video_url,
-            #                                                  file_path=self.directory + '_try3')
-            #         self.run_command('youtube-dl ' + filled_params)
-            #     else:
-            #         raise
-
-        self.delete_unnecessary_subtitles()
-        DirectoryWithSubtitlesEditImpositionTime.find_subtitles_and_edit(self.directory)
-        if self.need_translate:
-            directory_subs_translate(self.directory, 'en', 'ru')
-
-    def download_py(self):
-        import youtube_dl
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'logger': MyLogger(),
-            'progress_hooks': [],
-        }
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([self.video_url])
+            try:
+                self.run_command('youtube-dl ' + filled_params)
+            except subprocess.CalledProcessError:
+                if still_try_download:
+                    filled_params = youtube_dl_start_params.format(video_url=url,
+                                                                   file_path=directory + '_try3')
+                    self.run_command('youtube-dl ' + filled_params)
+                else:
+                    raise
+        self.post_download_process(directory)
 
     def run_command(self, command):
         subprocess.check_call(command, shell=True, env=self.get_environ())
-
-    def delete_unnecessary_subtitles(self):
-        from work_with_files import DeleteUnnecessaryFiles
-
-        need_leave_files_with_ends = DeleteUnnecessaryFiles.get_need_leave_files_with_ends(
-            self.languages, self.sub_extensions)
-        DeleteUnnecessaryFiles(self.directory, self.sub_extensions, need_leave_files_with_ends).main()
 
     @staticmethod
     def get_environ():
@@ -95,55 +149,4 @@ class YouTube:
         return current_environ
 
 
-class MyLogger(object):
-    def debug(self, msg):
-        print(msg)
-
-    def warning(self, msg):
-        print(msg)
-
-    def error(self, msg):
-        print(msg)
-
-
-if __name__ == '__main__':
-    YouTube('https://www.youtube.com/'
-            'watch?annotation_id=annotation_3706615519&feature='
-            'iv&src_vid=JNXOBN8kJrM&v=uh0Ri9440BQ').download()
-
-
-# class YouTubeDownloader:
-#     resolutions = ['720p', '480p', '360p', '240p']
-#     extension = 'mp4'
-#     subtitles = ['en', 'ru']
-#     chunk_size = 8 * 1024
-#     # subtitles_download_api = 'http://video.google.com/timedtext?lang={lang}&v={video_id}'
-#
-#     def __init__(self, video_url):
-#         self.video_url = video_url
-#         self.yt = YouTube(video_url)
-#
-#     def download(self, download_dir='.', with_subtitles=True):
-#         self.get_video().download(download_dir, on_progress=self.loader_show, force_overwrite=True)
-#
-#     def loader_show(self, _bytes_received, file_size, start):
-#         if _bytes_received == self.chunk_size:
-#             print('\n  **** **** \n  LOAD file {} '.format(self.yt.filename))
-#             print('  file_size {0:0.2f} = mb'.format(file_size / 8 / 1024 / 1024))
-#         max_count_points = 30
-#         current_count_percents = int(float(_bytes_received) / file_size * max_count_points)
-#         line = '*' * current_count_percents + '_' * (max_count_points - current_count_percents)
-#         print(line, end="\r")
-#
-#     def get_video(self):
-#         return self.yt.get(**self.get_resolution())
-
-    # def get_resolution(self):
-    #     for resolution in self.resolutions:
-    #         if self.yt.filter(self.extension, resolution=resolution):
-    #             return {'extension': self.extension, 'resolution': resolution}
-
-# yt = YouTueDownloader("https://www.youtube.com/watch?v=Q1wHkuzJAV0")
-# yt = YouTubeDownloader("https://www.youtube.com/watch?v=edWI4ZnWUGg")
-# yt = YouTubeDownloader("https://www.youtube.com/watch?v=AjFfsOA7AQI")
-# yt.download()
+'''

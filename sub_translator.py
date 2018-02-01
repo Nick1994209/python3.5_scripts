@@ -54,17 +54,19 @@ class DirectoryWithSubtitlesTranslate:
 class SubtitlesTranslator:
     search_translate_phrase = r'[a-zA-Z]+'
 
-    def __init__(self, translator: YandexTranslator):
+    def __init__(self, translator: YandexTranslator, add_name_translated_file='_translated_'):
         """
         :param translator: YandexTranslator(YandexTranslatorAPICredential.get_credentials())
+        :param add_name_translated_file: if subtitle been sub.en.srt => sub.translated_.ru.srt
         """
         self.translator = translator
+        self.add_name_translated_file = add_name_translated_file
 
     def translate(self, subtitles_file_path, translate_to_language):
         subtitles_lines = self.read_file(subtitles_file_path)
         translated_lines = self.translate_lines(subtitles_lines, translate_to_language)
         new_name_subtitles = self.generate_new_name(subtitles_file_path, translate_to_language)
-        # self.write_file(new_name_subtitles, translated_lines)
+        self.write_file(new_name_subtitles, translated_lines)
 
     @staticmethod
     def read_file(file_path):
@@ -100,10 +102,9 @@ class SubtitlesTranslator:
             )
         return translated_phrases
 
-    @staticmethod
-    def generate_new_name(subtitles_file_path, translate_to_language):
+    def generate_new_name(self, subtitles_file_path, translate_to_language):
         filename, file_extension = os.path.splitext(subtitles_file_path)
-        return filename + '.' + translate_to_language + file_extension
+        return filename + self.add_name_translated_file + translate_to_language + file_extension
 
     @staticmethod
     def write_file(new_name_subtitles, translated_lines):
@@ -118,5 +119,5 @@ directory_subs_translate = DirectoryWithSubtitlesTranslate(sub_translate).transl
 
 if __name__ == '__main__':
     # sub_translate('01_non-linear-hypotheses.en.srt', 'ru')
-    directory = 'youtube/to_google  '
+    directory = 'youtube/to_google'
     directory_subs_translate(directory, 'en', 'ru')
