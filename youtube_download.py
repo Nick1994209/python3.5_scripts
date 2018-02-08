@@ -53,10 +53,13 @@ class YouTubeDownloader:
             'writeautomaticsub': self.with_subtitles,
             'postprocessors': postprocessors,
             # 'format': 'bestvideo[height=720]',
-            'format': 'bestvideo+bestaudio/best',
+            # 'format': 'bestvideo+bestaudio/best',
             'progress_with_newline': False,  # TODO передать в Downloader
-            'noplaylist': download_playlist,
-            # 'external_downloader': 'a2',
+            'noplaylist': not download_playlist,
+
+            # for speed up download
+            # 'external_downloader': 'aria2c',
+            'format': '43',
 
             'username': self.username,
             'password': self.password,
