@@ -45,3 +45,5 @@ wxPython==4.0.0a3
 youtube-dl==2017.7.2
 mutagen
 tqdm
+certifi  # for ssh downloads
+pyTelegramBotAPI==3.6.1

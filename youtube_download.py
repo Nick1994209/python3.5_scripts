@@ -5,10 +5,8 @@ from sub_translator import directory_subs_translate
 
 '''
 YouTube example use
-youtube_with_subs = YouTube(with_subtitles=True, need_translate=True, video_height=720,
-                            username='nick1994209@gmail.com', password='NICK785665')
-youtube_without_subs = YouTube(with_subtitles=False, need_translate=False, video_height=720,
-                               username='nick1994209@gmail.com', password='NICK785665')
+youtube_with_subs = YouTube(with_subtitles=True, need_translate=True)
+youtube_without_subs = YouTube(with_subtitles=False, need_translate=False)
 
 youtube_without_subs.download(
     'https://www.youtube.com/watch?v=uaBp0uiLvKQ&list=PLj8oar3hwqiXIQr-m25rocuCdsjOAx_xp',
@@ -23,21 +21,25 @@ class YouTubeDownloader:
     """
         YouTube video downloader
     """
-    pref_settings = ' -f "bestvideo[height={video_height}]" '  # +best[ext=mp4]" '
     sub_extension = 'srt'
     sub_extensions = ['srt', 'vtt']
     languages = ['en', 'ru']
 
-    def __init__(self, with_subtitles=True, need_translate=False,
-                 video_height=720, username=None, password=None):
-        self.with_subtitles = with_subtitles
-        self.need_translate = need_translate
-        self.video_height = video_height
+    def __init__(self, username=None, password=None):
         self.username = username
         self.password = password
 
-    def download(self, url, download_playlist=False, directory='youtube',
-                 no_check_ssl=True, ignore_errors=False):
+    def download(
+            self, url, download_playlist=False, directory='youtube',
+            no_check_ssl=True, ignore_errors=False, video_format='43', before_filename='',
+            with_subtitles=False, need_translate=False,
+    ):
+        # default video_format='43' - for best speed download
+        # else [height=720] [height=360]
+
+        file_name = before_filename + (
+            '%(playlist_index)s-%(title)s.%(ext)s' if download_playlist else '%(title)s.%(ext)s'
+        )
 
         postprocessors = [
             {
@@ -47,10 +49,10 @@ class YouTubeDownloader:
         ]
         ydl_opts = {
             'nocheckcertificate': no_check_ssl,
-            'outtmpl': os.path.join(directory, '%(playlist_index)s-%(title)s.%(ext)s'),
+            'outtmpl': os.path.join(directory, file_name),
             'ignoreerrors': ignore_errors,
-            'allsubtitles': self.with_subtitles,
-            'writeautomaticsub': self.with_subtitles,
+            'allsubtitles': with_subtitles,
+            'writeautomaticsub': with_subtitles,
             'postprocessors': postprocessors,
             # 'format': 'bestvideo[height=720]',
             # 'format': 'bestvideo+bestaudio/best',
@@ -59,7 +61,8 @@ class YouTubeDownloader:
 
             # for speed up download
             # 'external_downloader': 'aria2c',
-            'format': '43',
+            'format': video_format,
+            # 'format': 'bestvideo[height=720]`+43',
 
             'username': self.username,
             'password': self.password,
@@ -75,12 +78,12 @@ class YouTubeDownloader:
 
             ydl.download([url])
 
-        self.post_download_process(directory)
+        self.post_download_process(directory, need_translate)
 
-    def post_download_process(self, directory):
+    def post_download_process(self, directory, need_translate):
         self.delete_unnecessary_subtitles(directory)
         DirectoryWithSubtitlesEditImpositionTime.find_subtitles_and_edit(directory)
-        if self.need_translate:
+        if need_translate:
             directory_subs_translate(directory, 'en', 'ru')
 
     def delete_unnecessary_subtitles(self, directory):
@@ -102,7 +105,8 @@ class MyLogger(object):
         print('ERROR-----', msg)
 
 
-'''
+'''    
+    pref_settings = ' -f "bestvideo[height={video_height}]" '  # +best[ext=mp4]" '
 
     def download_command_line(self, url, directory='youtube', no_check_ssl=False,
                               still_try_download=False):
