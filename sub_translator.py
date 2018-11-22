@@ -8,7 +8,7 @@ from translator import YandexTranslator
 class DirectoryWithSubtitlesTranslate:
     subtitles_ext = '.srt'
 
-    def __init__(self, sub_translator):
+    def __init__(self, sub_translator: 'SubtitlesTranslator().translate') -> None:
         """
         :param sub_translator: SubtitlesTranslator.translate
         """
@@ -119,5 +119,6 @@ directory_subs_translate = DirectoryWithSubtitlesTranslate(sub_translate).transl
 
 if __name__ == '__main__':
     # sub_translate('01_non-linear-hypotheses.en.srt', 'ru')
-    directory = 'youtube/to_google'
-    directory_subs_translate(directory, 'en', 'ru')
+    # directory = 'youtube/to_google'
+    # directory_subs_translate(directory, 'en', 'ru')
+    sub_translate('youtube/aaa/Creating Awesome 3D Animations With Python In Blender.en.srt', 'ru')

@@ -2,6 +2,7 @@ youtube/*
 coursera/*
 *.json
 .idea/*
+.idea
 .DS_Store
 *.pyc
 __pycache__
@@ -11,3 +12,6 @@ cx_freeze_examples/build
 *.mp3
 
 .auth_data
+
+# https://github.com/StepicOrg/stepik-oauth2-videodownloader
+stepik

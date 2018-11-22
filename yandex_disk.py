@@ -5,6 +5,8 @@ import requests
 
 """
 api get from https://github.com/TyVik/YaDiskClient
+
+usage: YaDisk(login='*****', password='****').upload('yandex_disk.py', 'backup/ya.py')
 """
 
 

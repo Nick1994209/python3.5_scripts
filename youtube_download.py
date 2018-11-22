@@ -1,14 +1,11 @@
 import os
 import youtube_dl
-from edit_subtitles_times import DirectoryWithSubtitlesEditImpositionTime
+from edit_subtitles import DirectorySubtitlesRepair, DirectoryUnionSubtitles
 from sub_translator import directory_subs_translate
 
 '''
 YouTube example use
-youtube_with_subs = YouTube(with_subtitles=True, need_translate=True)
-youtube_without_subs = YouTube(with_subtitles=False, need_translate=False)
-
-youtube_without_subs.download(
+YouTubeDownloader().download(
     'https://www.youtube.com/watch?v=uaBp0uiLvKQ&list=PLj8oar3hwqiXIQr-m25rocuCdsjOAx_xp',
     download_playlist=True,
     directory='youtube/neural_networks_microsoft',
@@ -78,13 +75,15 @@ class YouTubeDownloader:
 
             ydl.download([url])
 
-        self.post_download_process(directory, need_translate)
+        self.post_download_process(directory, with_subtitles, need_translate)
 
-    def post_download_process(self, directory, need_translate):
+    def post_download_process(self, directory, with_subtitles, need_translate):
         self.delete_unnecessary_subtitles(directory)
-        DirectoryWithSubtitlesEditImpositionTime.find_subtitles_and_edit(directory)
-        if need_translate:
-            directory_subs_translate(directory, 'en', 'ru')
+        if with_subtitles:
+            DirectorySubtitlesRepair.find_subtitles_and_edit(directory)
+            if need_translate:
+                directory_subs_translate(directory, 'en', 'ru')
+            DirectoryUnionSubtitles(directory)
 
     def delete_unnecessary_subtitles(self, directory):
         from work_with_files import DeleteUnnecessaryFiles

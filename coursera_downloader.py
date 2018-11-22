@@ -128,8 +128,9 @@ Selection of material to download:
 
 if __name__ == '__main__':
     from credentials import CourseraCredential
+    # CourseraCredential.set_credentials('login', 'password')
     user_coursera = Coursera(**CourseraCredential.get_credentials())
     # user_coursera = Coursera('login', 'password')
 
     # user_coursera.get_list_courses()
-    # user_coursera.download_course('machine-learning')
+    # user_coursera.download_course('internet-history')
