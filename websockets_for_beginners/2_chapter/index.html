@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Пример отправки и получения сообщений</title>
+</head>
+
+<body>
+  <h1>Пример отправки и получения сообщений</h1>
+  <div>
+    <input id="send_message_input" placeholder="Введите сообщение">
+    <button id="send_message_button">Отправить</button>
+
+    <h4>Сообщения</h4>
+    <div id="got_messages"></div>
+  </div>
+
+  <script>
+    var ws = new WebSocket("ws://localhost:8765");
+
+    // найдем кнопку по id=send_message_button
+    var sendMessageButton = document.getElementById('send_message_button');
+    // назначим на click функцию отправки в вебокет
+    sendMessageButton.onclick = function () {
+      // найдем элеммент ввода сообщений
+      var sendMessageInput = document.getElementById('send_message_input');
+      // получим значение
+      var value = sendMessageInput.value;
+      // и отправим это значение в вебсокет на сервер
+      ws.send(value);
+      sendMessageInput.value = '';
+    };
+
+    // назначим на прием сообщений функцию, которая будет записывать сообщения
+    ws.onmessage = function (message) {
+      var gotMessagesDIV = document.getElementById('got_messages');
+      gotMessagesDIV.innerHTML += '<div>' + message.data + '</div>';
+    };
+  </script>
+</body>
+</html>

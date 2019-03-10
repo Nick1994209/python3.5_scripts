@@ -382,7 +382,7 @@ class DirectoryCopySubtitlesAndSetSubName:
 
 
 if __name__ == '__main__':
-    DirectorySubtitlesRepair.find_subtitles_and_edit('youtube/asyncio')
+    # DirectorySubtitlesRepair.find_subtitles_and_edit('youtube/asyncio')
     # EditImpositionTimeInSubtitles.edit('youtube/aaa/Creating Awesome 3D Animations With Python In Blender.en.srt')
     # DeleteNotUsedStrings('youtube/aaa/Creating Awesome 3D Animations With Python In Blender.en.srt').delete()
     # UnionSubtitlesTwoLanguage(
@@ -391,10 +391,10 @@ if __name__ == '__main__':
     #     'youtube/aaa/Creating Awesome 3D Animations With Python In Blender.en-ru.srt',
     #     delete_not_used_str=True,
     # ).union()
-    # DirectoryUnionSubtitles('youtube/aaa/').find_subtitles_and_union()
+    DirectoryUnionSubtitles('youtube/storage/').find_subtitles_and_union()
     # DirectoryUnionSubtitles('youtube/Doctor Who Series 3 (2007)/', 'en', 'rus',
     #                         recursive=False).find_subtitles_and_union()
-    # DirectoryUnionSubtitles('youtube/ml_google', 'en', 'ru',
+    # DirectoryUnionSubtitles('youtube/asyncio', 'en', 'ru',
     #                         recursive=False).find_subtitles_and_union()
     # DirectorySetEngSubtitlesAndCopy(
     #     'youtube/Doctor Who Series 3 (2007)/Subtitles',

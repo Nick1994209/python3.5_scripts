@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Чат</title>
+
+    <!-- Подключаем bootstrap4 -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+<div class="jumbotron">
+    <h1 class="text-center">Чудочат</h1>
+    <h4 class="text-center">Тут одинокие борцы находят друг друга</h4>
+</div>
+
+<div class="container">
+    <div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Пользователь</span>
+            </div>
+            <input id="from_user_input" type="text" class="form-control">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Сообщение  </span>
+            </div>
+            <input id="send_message_input" type="text" class="form-control">
+            <button id="send_message_button" class="btn-success">Отправить</button>
+        </div>
+    </div>
+    <div>
+        <h4>Сообщения</h4>
+        <ul id="got_messages" class="list-group list-group-flush"></ul>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+  var ws = new WebSocket("ws://localhost:8765");
+  ws.onmessage = ({data}) => {
+    const element = `<li class="list-group-item">${data}</li>`;
+    // добавляем в начало
+    const gotMessagesDIV = $('#got_messages');
+    gotMessagesDIV.prepend(element);
+  };
+
+  $('#send_message_button').click(sendMessage);
+  $('#send_message_input').keyup((event) => {
+    const enterKeyCode = 13;
+    if (event.keyCode === enterKeyCode) {
+      sendMessage();
+    }
+  });
+
+  function sendMessage() {
+    const userMessage = $('#send_message_input').val();
+    const user = $('#from_user_input').val();
+    if (!user || !userMessage) {
+      alert("А кто пишет? Или где же наше сообщение? " +
+        "(необходимо заполнить пользователя и сообщение)")
+    }
+
+    const message = `${user}: ${userMessage}`;
+    ws.send(message);
+  }
+</script>
+</body>
+</html>

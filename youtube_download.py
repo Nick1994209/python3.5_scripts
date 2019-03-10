@@ -29,7 +29,7 @@ class YouTubeDownloader:
     def download(
             self, url, download_playlist=False, directory='youtube',
             no_check_ssl=True, ignore_errors=False, video_format='43', before_filename='',
-            with_subtitles=False, need_translate=False,
+            with_subtitles=False, need_translate=False, union_subtitles=True,
     ):
         # default video_format='43' - for best speed download
         # else [height=720] [height=360]
@@ -83,7 +83,7 @@ class YouTubeDownloader:
             DirectorySubtitlesRepair.find_subtitles_and_edit(directory)
             if need_translate:
                 directory_subs_translate(directory, 'en', 'ru')
-            DirectoryUnionSubtitles(directory)
+            DirectoryUnionSubtitles(directory).find_subtitles_and_union()
 
     def delete_unnecessary_subtitles(self, directory):
         from work_with_files import DeleteUnnecessaryFiles
@@ -156,3 +156,17 @@ class MyLogger(object):
 
 
 '''
+
+if __name__ == '__main__':
+    youtube = YouTubeDownloader(username='google_email', password='password')
+
+    youtube.download(
+        'https://www.youtube.com/watch?v=5VNfDa0MlXA&list=PLv_zOGKKxVpigCYSm1pVIezNiq1uV803U',
+        download_playlist=True,
+        directory='youtube/moscowpython63',
+        ignore_errors=True,
+        video_format='[height=720]',
+        # before_filename='',
+        with_subtitles=False,
+        need_translate=False,
+    )

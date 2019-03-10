@@ -5,7 +5,6 @@ import os
 import subprocess
 
 
-
 class Coursera:
     coursera_auth = 'coursera-dl -u {username} -p {password} '
     sub_extensions = ['srt', 'vtt']
@@ -96,20 +95,27 @@ Selection of material to download:
     def get_list_courses(self):
         self.run_command(self.coursera + '--list-courses')
 
-    def download_course(self, name, download_path='coursera', translate_subs=False):
+    def download_course(
+            self, name, download_path='coursera',
+            translate_subs=False, delete_unnecessary_files=True,
+            unnecessary_exts=None):
         """
         :param name: course name from self.get_list_courses
         :param download_path: directory for download courses
         :return: 
         """
+
         command = self.coursera + ' --jobs=3 --path="{}" --resume '.format(download_path) + name
         self.run_command(command)
-        self.delete_unnecessary_files(os.path.join(download_path, name))
+        # если нужно переводить сабы, а иы их удалим...
+        if delete_unnecessary_files and not translate_subs:
+            if unnecessary_exts is None:
+                unnecessary_exts = self.sub_extensions + self.text_extensions
+            self.delete_unnecessary_files(os.path.join(download_path, name), unnecessary_exts)
         if translate_subs:
             from sub_translator import directory_subs_translate
             os.path.join(download_path, name)
             directory_subs_translate(os.path.join(download_path, name), 'en', 'ru')
-
 
     @staticmethod
     def run_command(command):
@@ -117,20 +123,26 @@ Selection of material to download:
         current_environ['PATH'] = current_environ.get('PATH', '') + ':/usr/local/bin'
         subprocess.check_call(command, shell=True, env=current_environ)
 
-    def delete_unnecessary_files(self, download_path):
+    def delete_unnecessary_files(self, download_path, unnecessary_exts):
         from work_with_files import DeleteUnnecessaryFiles
 
-        extensions = self.sub_extensions + self.text_extensions
         need_leave_files_with_ends = DeleteUnnecessaryFiles.get_need_leave_files_with_ends(
-            self.languages, extensions)
-        DeleteUnnecessaryFiles(download_path, extensions, need_leave_files_with_ends)
+            self.languages, unnecessary_exts,
+        )
+        DeleteUnnecessaryFiles(download_path, unnecessary_exts, need_leave_files_with_ends)
 
 
 if __name__ == '__main__':
     from credentials import CourseraCredential
+
     # CourseraCredential.set_credentials('login', 'password')
     user_coursera = Coursera(**CourseraCredential.get_credentials())
+    user_coursera = Coursera(**{
+        'username': 'AOShchadko@domclick.ru',
+        'password': str('abcehmuh1')
+    })
     # user_coursera = Coursera('login', 'password')
 
-    # user_coursera.get_list_courses()
-    # user_coursera.download_course('internet-history')
+    user_coursera.get_list_courses()
+    user_coursera.download_course('supervised-learning')
+    # user_coursera.download_course('diving-in-python')
