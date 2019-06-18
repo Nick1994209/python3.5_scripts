@@ -1,9 +1,7 @@
-import mutagen
 import re
 import shutil
 import subprocess
 import os
-from mutagen.easyid3 import EasyID3
 from tqdm import tqdm
 
 
@@ -28,7 +26,7 @@ class DeleteUnnecessaryFiles:
                 continue
             if self.is_need_leave_file(path):
                 continue
-            print(path)
+            print('delete file',  path)
             os.remove(path)
 
     def is_file_with_delete_extension(self, file_path):
@@ -50,7 +48,7 @@ class DeleteUnnecessaryFiles:
 
 class CopyFilesHelper:
     def __init__(self, directory_from, directory_to, files_with_extensions='*',
-                 regexp_for_get_filename_base_from_path='\d+'):
+                 regexp_for_get_filename_base_from_path=None):
         """
 
         :param directory_from: 
@@ -92,9 +90,10 @@ class CopyFilesHelper:
 
     def get_file_name(self, file_path):
         directory, name = os.path.split(file_path)
-        sequence = re.findall(self.regexp_for_get_filename_base_from_path, directory)
-        if sequence:
-            return ''.join(sequence) + '_' + name
+        if self.regexp_for_get_filename_base_from_path:
+            sequence = re.findall(self.regexp_for_get_filename_base_from_path, directory)
+            if sequence:
+                return ''.join(sequence) + '_' + name
         return name
 
 
@@ -136,6 +135,9 @@ class AudioSetSortlist:
 
     @staticmethod
     def set_albumsort(file_path):
+        import mutagen
+        from mutagen.easyid3 import EasyID3
+
         _, name = os.path.split(file_path)
         try:
             audio_meta = EasyID3(file_path)
@@ -215,5 +217,8 @@ if __name__ == '__main__':
     # CopyFilesHelper('coursera/mfti/supervised-learning', 'coursera_show/mfti-2supervised-learning', ['mp4', 'srt'], '\d+_').main()
     # CopyFilesHelper('coursera/algorithmic-thinking-1', 'coursera_show/algorithmic-thinking', ['mp4', 'srt'], '\d+_').main()
     # CopyFilesHelper('coursera/machine-learning', 'coursera_show/machine-learning', ['mp4', 'srt'], '\d+_').main()
-    AudioSetSortlist('/Users/n.korolkov/Documents/audiobook').main()
+    # AudioSetSortlist('/Users/n.korolkov/Documents/audiobook').main()
     # ConvertVideo('youtube/научлок', from_extension='webm', to_extension='mp4').run()
+    CopyFilesHelper('/Users/nicking/Downloads/lfw',
+                    '/Users/nicking/Downloads/wild_faces',
+                    files_with_extensions=['jpg', 'png']).main()

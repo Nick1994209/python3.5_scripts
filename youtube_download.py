@@ -1,7 +1,7 @@
 import os
 import youtube_dl
 from edit_subtitles import DirectorySubtitlesRepair, DirectoryUnionSubtitles
-from sub_translator import directory_subs_translate
+from sub_translator import directory_translate_subtitles
 
 '''
 YouTube example use
@@ -18,7 +18,7 @@ class YouTubeDownloader:
     """
         YouTube video downloader
     """
-    sub_extension = 'srt'
+    sub_extension = 'srt'  # brew install ffmpeg (for convert vtt to srt)
     sub_extensions = ['srt', 'vtt']
     languages = ['en', 'ru']
 
@@ -28,14 +28,16 @@ class YouTubeDownloader:
 
     def download(
             self, url, download_playlist=False, directory='youtube',
-            no_check_ssl=True, ignore_errors=False, video_format='43', before_filename='',
+            no_check_ssl=True, ignore_errors=False, video_format='43',
+            before_filename='',
             with_subtitles=False, need_translate=False, union_subtitles=True,
     ):
         # default video_format='43' - for best speed download
         # else [height=720] [height=360]
 
         file_name = before_filename + (
-            '%(playlist_index)s-%(title)s.%(ext)s' if download_playlist else '%(title)s.%(ext)s'
+            '%(playlist_index)s-%(title)s.%(ext)s' if download_playlist
+            else '%(title)s.%(ext)s'
         )
 
         postprocessors = [
@@ -82,8 +84,10 @@ class YouTubeDownloader:
         if with_subtitles:
             DirectorySubtitlesRepair.find_subtitles_and_edit(directory)
             if need_translate:
-                directory_subs_translate(directory, 'en', 'ru')
-            DirectoryUnionSubtitles(directory).find_subtitles_and_union()
+                directory_translate_subtitles(directory, 'en', 'ru')
+            DirectoryUnionSubtitles(
+                directory, main_language='en', sub_language='ru'
+            ).find_subtitles_and_union()
 
     def delete_unnecessary_subtitles(self, directory):
         from work_with_files import DeleteUnnecessaryFiles
