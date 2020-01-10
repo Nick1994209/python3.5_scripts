@@ -27,17 +27,38 @@ class YouTubeDownloader:
         self.password = password
 
     def download(
-            self, url, download_playlist=False, directory='youtube',
-            no_check_ssl=True, ignore_errors=False, video_format='43',
-            before_filename='',
-            with_subtitles=False, need_translate=False, union_subtitles=True,
+        self,
+        url,
+        download_playlist=False,
+        directory='youtube',
+        no_check_ssl=True,
+        ignore_errors=False,
+        video_format='43',
+        before_filename='',
+        with_subtitles=False,
+        need_translate=False,
     ):
         # default video_format='43' - for best speed download
         # else [height=720] [height=360]
+        # bestvideo[height<=480]
+        # 'bestaudio[ext=m4a]' download only audio
+        # 140         m4a       audio only  DASH audio , audio@128k (worst)
+        # 160         mp4       144p        DASH video , video only
+        # 133         mp4       240p        DASH video , video only
+        # 134         mp4       360p        DASH video , video only
+        # 135         mp4       480p        DASH video , video only
+        # 136         mp4       720p        DASH video , video only
+        # 17          3gp       176x144
+        # 36          3gp       320x240
+        # 5           flv       400x240
+        # 43          webm      640x360
+        # 18          mp4       640x360
+        # 22          mp4       1280x720    (best)
 
+        base_file_name = '%(title)s.%(ext)s'  # '%(title)s-%(id)s.%(ext)s'
         file_name = before_filename + (
-            '%(playlist_index)s-%(title)s.%(ext)s' if download_playlist
-            else '%(title)s.%(ext)s'
+            f'%(playlist_index)s-{base_file_name}' if download_playlist
+            else base_file_name
         )
 
         postprocessors = [

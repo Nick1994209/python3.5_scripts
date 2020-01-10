@@ -1,11 +1,3 @@
-# SpeechRecognition;
-# gTTS;
-# PyAudio;  (brew install )
-
-# Подключение всех необходимых библиотек
-# Нам нужно: speech_recognition, os, sys, webbrowser
-# Для первой бибилотеки прописываем также псевдоним
-import speech_recognition as sr
 import os
 import sys
 import webbrowser
@@ -32,6 +24,15 @@ talk("Hello! How I can help you?")
 
 
 def command():
+    # SpeechRecognition;
+    # gTTS;
+    # PyAudio;  (brew install )
+
+    # Подключение всех необходимых библиотек
+    # Нам нужно: speech_recognition, os, sys, webbrowser
+    # Для первой бибилотеки прописываем также псевдоним
+    import speech_recognition as sr
+
     # Создаем объект на основе библиотеки
     # speech_recognition и вызываем метод для определения данных
     r = sr.Recognizer()
@@ -102,4 +103,5 @@ def makeSomething(zadanie):
 # осуществляться постоянно, поэтому здесь
 # прописан бесконечный цикл while
 while True:
-    makeSomething(command())
+    makeSomething('Вася')
+    # makeSomething(command())

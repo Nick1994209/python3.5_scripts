@@ -5,9 +5,13 @@
     * coursera
 
 
+#### mac preinstall
+
+    brew install ffmpeg libav #(for convert vtt to srt)
+    install xclode  (from appstore)
+
 ```python
 from youtube_download import YouTubeDownloader
-#  brew install ffmpeg (for convert vtt to srt)
 
 youtube = YouTubeDownloader(username='****@gmail.com',
                             password='****')

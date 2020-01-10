@@ -63,6 +63,21 @@ class YandexTranslatorAPICredential(Credential):
         return credentials
 
 
+class GoogleServicesCredential(Credential):
+    key = 'google-services'
+
+    @classmethod
+    def set_credentials(cls, username, password):
+        cls.add_credentials(cls.key, {'username': username, 'password': password})
+
+    @classmethod
+    def get_credentials(cls):
+        credentials = cls.get_all_credentials().get(cls.key)
+        if not credentials:
+            raise GetCredentialsException('GoogleServicesCredential.set_credentials(api_key)')
+        return credentials
+
+
 class GetCredentialsException(Exception):
     pass
 

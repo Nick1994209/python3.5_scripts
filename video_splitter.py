@@ -1,12 +1,7 @@
-#!/usr/bin/env python
-
-import csv
 import subprocess
 import re
 import math
-import json
 import os
-from optparse import OptionParser
 
 from tqdm import tqdm
 
@@ -17,7 +12,7 @@ re_length = re.compile(length_regexp)
 def split_by_seconds(filename, split_length=None, split_count=None, vcodec="copy", acodec="copy",
                      extra="", **kwargs):
     if split_length and split_length <= 0:
-        print ("Split length can't be 0")
+        print("Split length can't be 0")
         raise SystemExit
 
     if not split_count and not split_length:
@@ -41,7 +36,7 @@ def split_by_seconds(filename, split_length=None, split_count=None, vcodec="copy
         raise SystemExit
 
     if split_length:
-        split_count = int(math.ceil(video_length/float(split_length)))
+        split_count = int(math.ceil(video_length / float(split_length)))
     elif split_count:
         split_length = video_length / split_count
 
@@ -59,18 +54,18 @@ def split_by_seconds(filename, split_length=None, split_count=None, vcodec="copy
         else:
             split_start = split_length * n
 
-        split_str += " -ss "+str(split_start)+" -t "+str(split_length) + \
-                    " '"+filebase + "-" + str(n) + "." + fileext + \
-                    "'"
-        print ("About to run: "+split_cmd+split_str)
-        output = subprocess.Popen(split_cmd+split_str, shell = True, stdout =
-                               subprocess.PIPE).stdout.read()
+        split_str += " -ss " + str(split_start) + " -t " + str(split_length) + \
+                     " '" + filebase + "-" + str(n) + "." + fileext + \
+                     "'"
+        print("About to run: " + split_cmd + split_str)
+        output = subprocess.Popen(split_cmd + split_str, shell=True, stdout=
+        subprocess.PIPE).stdout.read()
 
 
-megabyte = 1024 * 1024 * 1024
+gigabyte = 1024 * 1024 * 1024
 
 
-def split_file_for_size(video_file_path, max_file_size=4*megabyte):
+def split_file_by_size(video_file_path, max_file_size=4 * gigabyte):
     print(video_file_path)
     print(os.stat(video_file_path).st_size)
     file_size = os.stat(video_file_path).st_size
@@ -81,5 +76,4 @@ def split_file_for_size(video_file_path, max_file_size=4*megabyte):
 
 
 if __name__ == '__main__':
-    split_file_for_size('/Users/n.korolkov/Documents/Under2.mkv')
-    # main()
+    split_file_by_size('~/Documents/Under2.mkv')

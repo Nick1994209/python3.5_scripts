@@ -22,7 +22,7 @@ parser.add_argument('-s', '--save_path', type=str, metavar='PATH',
                     dest='path')
 
 
-logging.config.dictConfig(LOGGING)
+logging.config.dictConfig({})
 logger = logging.getLogger('audio_analysis.capture')
 
 

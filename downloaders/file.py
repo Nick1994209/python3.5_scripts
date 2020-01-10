@@ -6,7 +6,12 @@ from mutagen.easyid3 import EasyID3
 from tqdm import tqdm
 
 
-def download_file(remote_file_path, file_name=None, download_to='files'):
+def download_file(
+        remote_file_path,
+        file_name=None,
+        download_to='files',
+        show_progress=True,
+):
     if not os.path.exists(download_to):
         os.makedirs(download_to)
 
@@ -14,9 +19,37 @@ def download_file(remote_file_path, file_name=None, download_to='files'):
         file_name = remote_file_path.rsplit('/')[-1]
 
     response = requests.get(remote_file_path)
+    response.raise_for_status()
+
+    total_length = response.headers.get('content-length')
+    total_length = total_length and convert_to_readable(int(total_length)) or 'undefined'
+
+    downloaded = 0
+
+    if show_progress:
+        print(file_name, total_length)
+
     with open(os.path.join(download_to, file_name), 'wb') as to_file:
-        for chunk in response.iter_content(chunk_size=1024):
+        chunk_size = 4096  # bytes
+        for chunk in response.iter_content(chunk_size=chunk_size):
             to_file.write(chunk)
+            downloaded += chunk_size
+            if show_progress:
+                print(
+                    f"\r[downloaded: {convert_to_readable(downloaded)}; total: {total_length}]",
+                    end='',
+                )
+
+
+def convert_to_readable(file_size: int):  # bytes
+    mb = 1024 * 1024
+    kb = 1024
+    if file_size // mb > 0:
+        return f'{round(file_size / mb, 1)}Mb'
+    if file_size // kb > 0:
+        return f'{round(file_size / kb, 1)}Kb'
+    else:
+        return f'{file_size}b'
 
 
 class AudioSetSortlist:
@@ -24,7 +57,8 @@ class AudioSetSortlist:
     Часто бывает, что ауидотреки в плейлисте на телефоне не в том порядке, что и на компе-
         решаем эту проблему =)
     """
-    def __init__(self, directory_from, files_with_extensions=('mp3', )):
+
+    def __init__(self, directory_from, files_with_extensions=('mp3',)):
         self.directory = directory_from
         self.files_with_extensions = files_with_extensions
 
@@ -72,3 +106,7 @@ class AudioSetSortlist:
     def check_albumsort(file_path):
         EasyID3(file_path)
         print(file_path)
+
+
+if __name__ == '__main__':
+    AudioSetSortlist('/Users/n.korolkov/Downloads/pasha-i-papa').sort()

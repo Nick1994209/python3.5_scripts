@@ -7,7 +7,6 @@ coursera/*
 *.pyc
 __pycache__
 
-download.py
 cx_freeze_examples/build
 *.mp3
 
@@ -15,3 +14,5 @@ cx_freeze_examples/build
 
 # https://github.com/StepicOrg/stepik-oauth2-videodownloader
 stepik
+
+venv/
