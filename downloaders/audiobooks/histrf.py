@@ -5,7 +5,7 @@ import bs4
 import requests
 from furl import furl
 from tqdm import tqdm
-from .file import download_file
+from downloaders.file import download_file
 
 
 def download_from_histrf():

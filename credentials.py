@@ -17,9 +17,13 @@ class Credential:
             return {}
 
     @classmethod
-    def add_credentials(cls, key, dict_credentials):
+    def get_credentials_by_key(cls, key):
+        return cls.get_all_credentials().get(key)
+
+    @classmethod
+    def add_credentials(cls, key, credentials):
         my_credentials = cls.get_all_credentials()
-        my_credentials[key] = dict_credentials
+        my_credentials[key] = credentials
 
         with open(cls.credentials_file, 'w') as file_:
             file_.write(json.dumps(my_credentials, indent=3))
@@ -38,7 +42,7 @@ class CourseraCredential(Credential):
 
     @classmethod
     def get_credentials(cls):
-        credentials = cls.get_all_credentials().get(cls.key)
+        credentials = cls.get_credentials_by_key(cls.key)
         if not credentials:
             raise GetCredentialsException('Need set coursera credentials: '
                                           'CourseraCredential.set_credentials(login, password)'
@@ -55,7 +59,7 @@ class YandexTranslatorAPICredential(Credential):
 
     @classmethod
     def get_credentials(cls):
-        credentials = cls.get_all_credentials().get(cls.key)
+        credentials = cls.get_credentials_by_key(cls.key)
         if not credentials:
             raise GetCredentialsException('Need set yandex translator api credentials: '
                                           'YandexTranslatorAPICredential.set_credentials(api_key)'
@@ -72,10 +76,20 @@ class GoogleServicesCredential(Credential):
 
     @classmethod
     def get_credentials(cls):
-        credentials = cls.get_all_credentials().get(cls.key)
+        credentials = cls.get_credentials_by_key(cls.key)
         if not credentials:
             raise GetCredentialsException('GoogleServicesCredential.set_credentials(api_key)')
         return credentials
+
+
+class SmartreadingCredential(Credential):
+    key = 'smartreading'
+
+    @classmethod
+    def set_creadentials(cls, raw_cookie: str):
+        # raw_cookie got from browser document.script
+        cookie = {c.split('=')[0]: c.split('=')[1] for c in raw_cookie.split('; ')}
+        cls.add_credentials('smartreading', cookie)
 
 
 class GetCredentialsException(Exception):

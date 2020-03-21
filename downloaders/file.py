@@ -11,6 +11,7 @@ def download_file(
         file_name=None,
         download_to='files',
         show_progress=True,
+        **request_kwargs
 ):
     if not os.path.exists(download_to):
         os.makedirs(download_to)
@@ -18,7 +19,7 @@ def download_file(
     if not file_name:
         file_name = remote_file_path.rsplit('/')[-1]
 
-    response = requests.get(remote_file_path)
+    response = requests.get(remote_file_path, **request_kwargs)
     response.raise_for_status()
 
     total_length = response.headers.get('content-length')
@@ -109,4 +110,6 @@ class AudioSetSortlist:
 
 
 if __name__ == '__main__':
-    AudioSetSortlist('/Users/n.korolkov/Downloads/pasha-i-papa').sort()
+    # AudioSetSortlist('/Users/n.korolkov/Downloads/pasha-i-papa').sort()
+    download_file('https://smartreading.ru/file/media/227/MP3/get/file.mp3?v1',
+                  'принцип пирамиды минто.mp3')

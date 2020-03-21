@@ -4,13 +4,13 @@ from credentials import GoogleServicesCredential
 downloader = YouTubeDownloader(**GoogleServicesCredential.get_credentials())
 
 
-def download_video_best(path, directory):
+def download_video_best(path, directory, video_format='[height>=720]'):
     downloader.download(
         path,
         download_playlist=False,
         directory=f'youtube/{directory}',
         ignore_errors=False,
-        video_format='[height>=720]',
+        video_format=video_format,
         # video_format='bestvideo',
         with_subtitles=False,
         need_translate=False,
@@ -25,6 +25,19 @@ def download_multiple_best_video(playlist_list, directory):
         directory=f'youtube/{directory}',
         ignore_errors=False,
         video_format='[height>=720]',
+        with_subtitles=False,
+        need_translate=False,
+        before_filename='',
+    )
+
+
+def download_multiple_normal_video(playlist_list, directory):
+    downloader.download(
+        playlist_list,
+        download_playlist=True,
+        directory=f'youtube/{directory}',
+        ignore_errors=False,
+        video_format='[height>=360]',
         with_subtitles=False,
         need_translate=False,
         before_filename='',
@@ -51,7 +64,19 @@ def download_audio(path, directory):
         video_format='140',  # m4a
     )
 
+
 download_video_bad_quality(
-    'https://www.youtube.com/watch?v=qT95d_W5kpU&list=PL_L_HiHe5k_1VLeL9hta_6IIXN71pf_-H&index=3',
-    'team_lead_conf',
+    'https://www.youtube.com/watch?v=6I6chocTcIo&list=WL&index=2&t=1192s',
+    'my_playlist',
+)
+
+download_video_bad_quality(
+    'https://www.youtube.com/watch?v=h10qZGq36DE&list=WL&index=7&t=0s',
+    'my_playlist',
+)
+
+download_video_best(
+    'https://www.youtube.com/watch?v=P13KVYTu0eU&list=WL&index=4&t=535s',
+    'my_playlist',
+    video_format='[height>=360]',
 )
