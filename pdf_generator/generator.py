@@ -5,7 +5,20 @@ from PIL import Image
 import re
 
 
+def get_chapters(directory):
+    chapter = {}
+
+    for file in sorted(os.listdir(directory), key=get_sorted_func()):
+        path = os.path.join(directory, file)
+        if os.path.isdir(path):
+            chapter[file] = get_pdf_images(path, recursive=True)
+    return chapter
+
+
 def make_pdf(pdf_file_name, list_pages, directory=''):
+    if directory and not os.path.exists(directory):
+        os.makedirs(directory)
+
     cover = Image.open(list_pages[0])
     width, height = cover.size
 
@@ -21,28 +34,39 @@ def make_pdf(pdf_file_name, list_pages, directory=''):
     pdf.output(os.path.join(directory, pdf_file_name + ".pdf"), "F")
 
 
-def get_pdf_images(directory, recursive=True, img_formates=frozenset({'jpg'})):
-    def sorted_func(file_name):
-        maths = re.findall(r'\d+', file_name)
-        if not maths:
-            return file_name
-        else:
-            return maths[0]
-
+def get_pdf_images(directory, recursive=True, img_formats=frozenset({'jpg', 'png'})):
     files = []
 
-    for file in sorted(os.listdir(directory), key=sorted_func):
+    for file in sorted(os.listdir(directory), key=get_sorted_func()):
         path = os.path.join(directory, file)
         if os.path.isdir(path) and recursive:
             files.extend(get_pdf_images(path, recursive=recursive))
-        elif file.rsplit('.')[-1].lower() in img_formates:
-            print(file)
+        elif file.rsplit('.')[-1].lower() in img_formats:
             files.append(path)
-        print(file)
     return files
 
 
+def get_sorted_func(is_started_from_chapter=True):
+    """
+    :param is_started_from_chapter: True if filename is Dorohedoro_v01_p001 else False (Dorohedoro_p001_v01)
+    """
+
+    def sorted_func(file_name):
+        matches = re.findall(r'\d+', file_name)
+        if not matches:
+            return file_name
+        else:
+            # for Dorohedoro_v01_p001 -> 11
+            if is_started_from_chapter:
+                matches.reverse()
+            return ''.join(str(match) for match in matches)
+    return sorted_func
+
+
 if __name__ == '__main__':
-    list_images = get_pdf_images('/Users/n.korolkov/Downloads')
-    print(list_images)
-    make_pdf('aaa', list_pages=list_images)
+    chapters = get_chapters(r'E:\Downloads\torrents\Dorohedoro')
+    print(list(chapters))
+
+    for index, (chapter_name, list_images) in enumerate(chapters.items()):
+        print(index, chapter_name, list_images)
+        make_pdf(chapter_name, list_pages=list_images, directory='dorohedoro')
