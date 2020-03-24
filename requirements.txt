@@ -281,7 +281,7 @@ jupyter==1.0.0
             ipython-genutils==0.2.0
             six==1.12.0
         nbconvert==5.4.1
-          bleach==3.1.0
+          bleach==3.1.2
             six==1.12.0
             webencodings==0.5.1
           defusedxml==0.6.0
@@ -422,7 +422,7 @@ jupyter==1.0.0
       wcwidth==0.1.7
     Pygments==2.3.1
   nbconvert==5.4.1
-    bleach==3.1.0
+    bleach==3.1.2
       six==1.12.0
       webencodings==0.5.1
     defusedxml==0.6.0
@@ -521,7 +521,7 @@ jupyter==1.0.0
         ipython-genutils==0.2.0
         six==1.12.0
     nbconvert==5.4.1
-      bleach==3.1.0
+      bleach==3.1.2
         six==1.12.0
         webencodings==0.5.1
       defusedxml==0.6.0
