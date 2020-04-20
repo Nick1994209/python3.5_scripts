@@ -25,7 +25,7 @@ coursera-dl==0.11.4
 coverage==4.4.2
 cx-Freeze==5.0.2
 
-Django==1.8.5
+Django==1.11.28
 django-crispy-forms==1.5.2
 django-grappelli==2.7.1
 ethereum-serpent==2.0.4
