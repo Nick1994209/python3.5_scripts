@@ -11,6 +11,7 @@ def download_file(
         file_name=None,
         download_to='files',
         show_progress=True,
+        stream=True,
         **request_kwargs
 ):
     if not os.path.exists(download_to):
@@ -19,7 +20,7 @@ def download_file(
     if not file_name:
         file_name = remote_file_path.rsplit('/')[-1]
 
-    response = requests.get(remote_file_path, **request_kwargs)
+    response = requests.get(remote_file_path, stream=stream, **request_kwargs)
     response.raise_for_status()
 
     total_length = response.headers.get('content-length')
@@ -37,9 +38,10 @@ def download_file(
             downloaded += chunk_size
             if show_progress:
                 print(
-                    f"\r[downloaded: {convert_to_readable(downloaded)}; total: {total_length}]",
+                    f"\r[downloading: {convert_to_readable(downloaded)}; total: {total_length}]",
                     end='',
                 )
+    print(f'\rFile {file_name} has downloaded')
 
 
 def convert_to_readable(file_size: int):  # bytes

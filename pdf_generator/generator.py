@@ -46,7 +46,7 @@ def get_pdf_images(directory, recursive=True, img_formats=frozenset({'jpg', 'png
     return files
 
 
-def get_sorted_func(is_started_from_chapter=True):
+def get_sorted_func(is_started_from_chapter=True, number_zeros=3):
     """
     :param is_started_from_chapter: True if filename is Dorohedoro_v01_p001 else False (Dorohedoro_p001_v01)
     """
@@ -56,10 +56,10 @@ def get_sorted_func(is_started_from_chapter=True):
         if not matches:
             return file_name
         else:
-            # for Dorohedoro_v01_p001 -> 11
-            if is_started_from_chapter:
+            if not is_started_from_chapter:
+                # for Dorohedoro_v02_p001 -> 001-002
                 matches.reverse()
-            return ''.join(str(match) for match in matches)
+            return '-'.join(f'{int(match):0{number_zeros}n}' for match in matches)
     return sorted_func
 
 
