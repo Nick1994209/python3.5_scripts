@@ -115,7 +115,7 @@ jupyter==1.0.0
       prompt-toolkit==2.0.9
         six==1.12.0
         wcwidth==0.1.7
-      Pygments==2.3.1
+      Pygments==2.7.4
       setuptools==41.0.1
       traitlets==4.3.2
         decorator==4.4.0
@@ -154,7 +154,7 @@ jupyter==1.0.0
         prompt-toolkit==2.0.9
           six==1.12.0
           wcwidth==0.1.7
-        Pygments==2.3.1
+        Pygments==2.7.4
         setuptools==41.0.1
         traitlets==4.3.2
           decorator==4.4.0
@@ -191,7 +191,7 @@ jupyter==1.0.0
       prompt-toolkit==2.0.9
         six==1.12.0
         wcwidth==0.1.7
-      Pygments==2.3.1
+      Pygments==2.7.4
       setuptools==41.0.1
       traitlets==4.3.2
         decorator==4.4.0
@@ -233,7 +233,7 @@ jupyter==1.0.0
             prompt-toolkit==2.0.9
               six==1.12.0
               wcwidth==0.1.7
-            Pygments==2.3.1
+            Pygments==2.7.4
             setuptools==41.0.1
             traitlets==4.3.2
               decorator==4.4.0
@@ -312,7 +312,7 @@ jupyter==1.0.0
               ipython-genutils==0.2.0
               six==1.12.0
           pandocfilters==1.4.2
-          Pygments==2.3.1
+          Pygments==2.7.4
           testpath==0.4.2
           traitlets==4.3.2
             decorator==4.4.0
@@ -360,7 +360,7 @@ jupyter==1.0.0
         prompt-toolkit==2.0.9
           six==1.12.0
           wcwidth==0.1.7
-        Pygments==2.3.1
+        Pygments==2.7.4
         setuptools==41.0.1
         traitlets==4.3.2
           decorator==4.4.0
@@ -397,7 +397,7 @@ jupyter==1.0.0
       prompt-toolkit==2.0.9
         six==1.12.0
         wcwidth==0.1.7
-      Pygments==2.3.1
+      Pygments==2.7.4
       setuptools==41.0.1
       traitlets==4.3.2
         decorator==4.4.0
@@ -420,7 +420,7 @@ jupyter==1.0.0
     prompt-toolkit==2.0.9
       six==1.12.0
       wcwidth==0.1.7
-    Pygments==2.3.1
+    Pygments==2.7.4
   nbconvert==5.4.1
     bleach==3.1.0
       six==1.12.0
@@ -453,7 +453,7 @@ jupyter==1.0.0
         ipython-genutils==0.2.0
         six==1.12.0
     pandocfilters==1.4.2
-    Pygments==2.3.1
+    Pygments==2.7.4
     testpath==0.4.2
     traitlets==4.3.2
       decorator==4.4.0
@@ -473,7 +473,7 @@ jupyter==1.0.0
         prompt-toolkit==2.0.9
           six==1.12.0
           wcwidth==0.1.7
-        Pygments==2.3.1
+        Pygments==2.7.4
         setuptools==41.0.1
         traitlets==4.3.2
           decorator==4.4.0
@@ -552,7 +552,7 @@ jupyter==1.0.0
           ipython-genutils==0.2.0
           six==1.12.0
       pandocfilters==1.4.2
-      Pygments==2.3.1
+      Pygments==2.7.4
       testpath==0.4.2
       traitlets==4.3.2
         decorator==4.4.0
@@ -600,7 +600,7 @@ jupyter==1.0.0
         prompt-toolkit==2.0.9
           six==1.12.0
           wcwidth==0.1.7
-        Pygments==2.3.1
+        Pygments==2.7.4
         setuptools==41.0.1
         traitlets==4.3.2
           decorator==4.4.0
@@ -645,7 +645,7 @@ jupyter==1.0.0
         decorator==4.4.0
         ipython-genutils==0.2.0
         six==1.12.0
-    Pygments==2.3.1
+    Pygments==2.7.4
     traitlets==4.3.2
       decorator==4.4.0
       ipython-genutils==0.2.0
