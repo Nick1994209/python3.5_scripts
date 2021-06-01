@@ -19,9 +19,9 @@ coursera-dl==0.11.4
     certifi==2018.4.16
     chardet==3.0.4
     idna==2.6
-    urllib3==1.22
+    urllib3==1.26.5
   six==1.12.0
-  urllib3==1.22
+  urllib3==1.26.5
 coverage==4.4.2
 cx-Freeze==5.0.2
 
@@ -52,7 +52,7 @@ folium==0.5.0
     certifi==2018.4.16
     chardet==3.0.4
     idna==2.6
-    urllib3==1.22
+    urllib3==1.26.5
   six==1.12.0
 fpdf==1.7.2
 furl==1.0.0
@@ -80,12 +80,12 @@ gTTS==1.2.2
       certifi==2018.4.16
       chardet==3.0.4
       idna==2.6
-      urllib3==1.22
+      urllib3==1.26.5
   requests==2.19.1
     certifi==2018.4.16
     chardet==3.0.4
     idna==2.6
-    urllib3==1.22
+    urllib3==1.26.5
   six==1.12.0
 hacking==1.0.0
   flake8==2.5.5
@@ -681,7 +681,7 @@ requests-toolbelt==0.8.0
     certifi==2018.4.16
     chardet==3.0.4
     idna==2.6
-    urllib3==1.22
+    urllib3==1.26.5
 scikit-image==0.14.0
   cloudpickle==0.5.3
   dask==0.18.1
@@ -710,7 +710,7 @@ udacity==1.1.1
     certifi==2018.4.16
     chardet==3.0.4
     idna==2.6
-    urllib3==1.22
+    urllib3==1.26.5
 Wand==0.4.4
 wheel==0.30.0
 youtube-dl==2019.11.28
