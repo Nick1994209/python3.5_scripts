@@ -655,7 +655,7 @@ mock==2.0.0
   pbr==3.1.1
   six==1.12.0
 mutagen==1.38
-opencv-python==4.1.0.25
+opencv-python==4.2.0.32
 pbkdf2==1.3
 pika==0.11.0
 pip-tools==1.11.0
