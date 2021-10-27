@@ -684,7 +684,7 @@ requests-toolbelt==0.8.0
     urllib3==1.22
 scikit-image==0.14.0
   cloudpickle==0.5.3
-  dask==0.18.1
+  dask==2021.10.0
   matplotlib==3.0.3
   networkx==2.1
     decorator==4.4.0
