@@ -664,7 +664,7 @@ pip-tools==1.11.0
   setuptools==41.0.1
   six==1.12.0
 pipdeptree==0.13.0
-  pip==9.0.1
+  pip==21.1
 py-ecc==1.4.2
 py-translate==1.0.3
 pyminifier==2.1
